@@ -1,62 +1,60 @@
-import { ActivityIndicator, Button, FlatList, Text, View } from "react-native";
+import { ActivityIndicator, Button, FlatList, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useGenres } from "../src/hooks/useGenres";
-import { useMoviesByGenre } from "../src/hooks/useMoviesByGenre";
+import { StatusBar } from "expo-status-bar";
+import { useRouter } from "expo-router";
 
 export default function MainScreen() {
-	// const { genres, isLoading, error, refetch } = useGenres();
-	const { movies, isLoading, error, isFetchingNextPage, loadMore, hasMore } = useMoviesByGenre(28);
+	const router = useRouter();
+	const { genres, isLoading, error, refetch } = useGenres();
 
-	// Logika: Jika sedang loading, tampilkan indikator putar
 	if (isLoading) {
 		return (
-			<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-				<ActivityIndicator size="large" color="#0000ff" />
-				<Text>Loading Genres...</Text>
+			<View className="items-center justify-center flex-1 bg-background">
+				<ActivityIndicator size="large" color="#e11d48" />
 			</View>
 		);
 	}
 
-	// Logika: Jika ada error, tampilkan pesan error dan tombol retry (menggunakan refetch)
 	if (error) {
 		return (
-			<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-				<Text style={{ color: "red" }}>{error}</Text>
-				{/* <Button title="Retry" onPress={refetch} /> */}
+			<View className="flex-1 bg-background">
+				<Text className="text-red-500">{error}</Text>
+				<Button title="Retry" onPress={refetch} />
 			</View>
 		);
 	}
 
 	return (
-		<SafeAreaView style={{ flex: 1 }}>
-			<View style={{ padding: 20 }}>
-				<Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 20 }}>Movie Genres</Text>
+		<SafeAreaView className="flex-1 bg-background">
+			<StatusBar style="light" />
 
-				{/* Menggunakan FlatList untuk menampilkan data secara efisien */}
-				{/* <FlatList
-					data={genres}
-					keyExtractor={(item) => item.id.toString()}
-					renderItem={({ item }) => (
-						<View style={{ paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: "#ccc" }}>
-							<Text style={{ fontSize: 18 }}>{item.name}</Text>
-							<Text style={{ fontSize: 12, color: "gray" }}>ID: {item.id}</Text>
-						</View>
-					)}
-				/> */}
-			</View>
+			<View className="px-4 pt-4">
+				<Text className="mb-2 text-3xl font-bold text-textPrimary">Discover</Text>
+				<Text className="mb-6 text-textSecondary">Select a genre to find your next movie</Text>
 
-			<View className="flex-1">
 				<FlatList
-					data={movies}
+					data={genres}
 					numColumns={2}
 					keyExtractor={(item) => item.id.toString()}
+					columnWrapperStyle={{ justifyContent: "space-between", gap: 10 }}
 					renderItem={({ item }) => (
-						<View>
-							<Text>{item.title}</Text>
-						</View>
+						<TouchableOpacity
+							className="w-[48%] mb-4 p-6 border shadow-lg bg-surface rounded-2xl border-slate-700 active:opacity-70"
+							onPress={() => {
+								router.push({
+									pathname: "genre/[id]",
+									params: {
+										id: item.id,
+										name: item.name,
+									},
+								});
+							}}
+						>
+							<View className="w-10 h-1 mb-3 rounded-full bg-primary" />
+							<Text className="text-lg font-semibold text-textPrimary">{item.name}</Text>
+						</TouchableOpacity>
 					)}
-					onEndReached={loadMore}
-					onEndReachedThreshold={0.5}
 				/>
 			</View>
 		</SafeAreaView>
