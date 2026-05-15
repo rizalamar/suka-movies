@@ -11,13 +11,23 @@ export const useMoviesByGenre = (genreId: number) => {
 	const [hasMore, setHasMore] = useState<boolean>(false);
 
 	const fetchMovies = async (pageTofetch: number, isInitial: boolean = false) => {
+		if (!isInitial && (isLoading || isFetchingNextPage)) return;
+
 		try {
 			if (isInitial) setIsloading(true);
 			else setIsFetchingNextPage(true);
 
 			setError(null);
 			const res = await movieService.getMoviesByGenre(genreId, pageTofetch);
-			setMovies((prev) => (isInitial ? res.results : [...prev, ...res.results]));
+			setMovies((prev) => {
+				const newResult = res.results;
+				if (isInitial) return newResult;
+
+				const existingIds = new Set(prev.map((m) => m.id));
+				const uniqueNewResults = newResult.filter((m) => !existingIds.has(m.id));
+
+				return [...prev, ...uniqueNewResults];
+			});
 			setHasMore(pageTofetch < (res.total_pages || 0));
 			setPage(pageTofetch);
 		} catch (error) {
@@ -31,6 +41,7 @@ export const useMoviesByGenre = (genreId: number) => {
 	useEffect(() => {
 		setMovies([]);
 		setPage(1);
+		setHasMore(true);
 		fetchMovies(1, true);
 	}, [genreId]);
 

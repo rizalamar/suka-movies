@@ -1,9 +1,11 @@
 import { ActivityIndicator, Button, FlatList, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useGenres } from "../src/hooks/useGenres";
+import { useMoviesByGenre } from "../src/hooks/useMoviesByGenre";
 
 export default function MainScreen() {
-	const { genres, isLoading, error, refetch } = useGenres();
+	// const { genres, isLoading, error, refetch } = useGenres();
+	const { movies, isLoading, error, isFetchingNextPage, loadMore, hasMore } = useMoviesByGenre(28);
 
 	// Logika: Jika sedang loading, tampilkan indikator putar
 	if (isLoading) {
@@ -20,7 +22,7 @@ export default function MainScreen() {
 		return (
 			<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
 				<Text style={{ color: "red" }}>{error}</Text>
-				<Button title="Retry" onPress={refetch} />
+				{/* <Button title="Retry" onPress={refetch} /> */}
 			</View>
 		);
 	}
@@ -31,7 +33,7 @@ export default function MainScreen() {
 				<Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 20 }}>Movie Genres</Text>
 
 				{/* Menggunakan FlatList untuk menampilkan data secara efisien */}
-				<FlatList
+				{/* <FlatList
 					data={genres}
 					keyExtractor={(item) => item.id.toString()}
 					renderItem={({ item }) => (
@@ -40,6 +42,21 @@ export default function MainScreen() {
 							<Text style={{ fontSize: 12, color: "gray" }}>ID: {item.id}</Text>
 						</View>
 					)}
+				/> */}
+			</View>
+
+			<View className="flex-1">
+				<FlatList
+					data={movies}
+					numColumns={2}
+					keyExtractor={(item) => item.id.toString()}
+					renderItem={({ item }) => (
+						<View>
+							<Text>{item.title}</Text>
+						</View>
+					)}
+					onEndReached={loadMore}
+					onEndReachedThreshold={0.5}
 				/>
 			</View>
 		</SafeAreaView>
