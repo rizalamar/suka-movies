@@ -12,6 +12,7 @@
   "dependencies": {
     "axios": "^1.16.1",
     "expo": "55.0.24",
+    "expo-blur": "~55.0.14",
     "expo-constants": "~55.0.16",
     "expo-image": "~55.0.10",
     "expo-linear-gradient": "~55.0.14",
