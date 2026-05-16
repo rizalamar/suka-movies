@@ -43,7 +43,7 @@ export default function MainScreen() {
 							className="w-[48%] mb-4 p-6 border shadow-lg bg-surface rounded-2xl border-slate-700 active:opacity-70"
 							onPress={() => {
 								router.push({
-									pathname: "genre/[id]",
+									pathname: "movies-by-genre/[id]",
 									params: {
 										id: item.id,
 										name: item.name,
