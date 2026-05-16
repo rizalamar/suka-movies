@@ -9,6 +9,7 @@ import YoutubePlayer from "react-native-youtube-iframe";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { BlurView } from "expo-blur";
 import { SCREEN_HEIGHT, VIDEO_HEIGHT, VIDEO_WIDTH } from "../../src/constants/movie-detail";
+import { opacity } from "react-native-reanimated/lib/typescript/Colors";
 
 export default function MovieDetailScreen() {
 	const { id } = useLocalSearchParams();
@@ -112,22 +113,34 @@ export default function MovieDetailScreen() {
 						>
 							Watch Trailer
 						</Text>
-						<View className="overflow-hidden border shadow-2xl rounded-3xl bg-slate-900 border-slate-800">
+
+						<TouchableOpacity
+							activeOpacity={0.9}
+							className="relative overflow-hidden border shadow-2xl rounded-3xl bg-slate-900 border-slate-800"
+							style={{
+								width: VIDEO_WIDTH,
+								minHeight: VIDEO_HEIGHT,
+								backgroundColor: "black",
+								transform: [{ perspective: 1000 }],
+							}}
+						>
 							<YoutubePlayer
 								height={VIDEO_HEIGHT}
 								width={VIDEO_WIDTH}
 								videoId={trailer.key}
+								play={false}
 								webViewProps={{
-									androidLayerType: "software",
-									style: { opacity: 0.99, backgroundColor: "transparent" },
-								}}
-								initialPlayerParams={{
-									preventFullScreen: false,
-									cc_load_policy: 0,
-									rel: 0,
+									androidLayerType: "hardware",
+									style: {
+										opacity: 0.99,
+										backgroundColor: "black",
+									},
+									mediaPlaybackRequiresUserAction: false,
+									domStorageEnabled: true,
+									javaScriptEnabled: true,
 								}}
 							/>
-						</View>
+						</TouchableOpacity>
 					</View>
 				)}
 
