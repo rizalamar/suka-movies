@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { MovieDetail } from "../types/movie";
 import { Review } from "../types/review";
 import { Video } from "../types/video";
@@ -11,12 +11,14 @@ export const useMovieDetail = (movieId: number) => {
 
 	const [isLoading, setisLoading] = useState<boolean>(false);
 	const [reviewPage, setReviewPage] = useState<number>(1);
-	const [hasMoreReviews, setHasMoreReviews] = useState<boolean>(false);
+	const [hasMoreReviews, setHasMoreReviews] = useState<boolean>(true);
 	const [isFetchingReviews, setIsFetchingReviews] = useState<boolean>(false);
+	const isInitialLoad = useRef(true);
 
 	const fetchDetailMovieData = async () => {
 		try {
 			setisLoading(true);
+			isInitialLoad.current = true;
 			const [movieDetailData, videoData, reviewData] = await Promise.all([
 				movieService.getMovieDetail(movieId),
 				movieService.getMovieVideos(movieId),
@@ -31,30 +33,42 @@ export const useMovieDetail = (movieId: number) => {
 			setReviews(reviewData.results);
 			setTrailer(ytTrailer || null);
 
-			setHasMoreReviews(1 < (reviewData.total_pages || 0));
+			setHasMoreReviews((reviewData.page ?? 1) < (reviewData.total_pages ?? 1));
+
+			console.log({
+				page: reviewData.page,
+				total_pages: reviewData.total_pages,
+				results_count: reviewData.results.length,
+			});
 		} catch (error) {
 			console.error("Error fetching movie details: ", error);
 		} finally {
 			setisLoading(false);
+			isInitialLoad.current = false;
 		}
 	};
 
-	const loadMoreReviews = async () => {
-		if (isFetchingReviews || !hasMoreReviews) return;
+	const loadMoreReviews = useCallback(async () => {
+		if (isLoading || isFetchingReviews || !hasMoreReviews || isInitialLoad.current) return;
+
 		try {
 			setIsFetchingReviews(true);
 			const nextPage = reviewPage + 1;
 			const res = await movieService.getMovieReviews(movieId, nextPage);
 
-			setReviews((prev) => [...prev, ...res.results]);
-			setReviewPage(nextPage);
-			setHasMoreReviews(nextPage < (res.total_pages || 0));
+			if (res.results.length > 0) {
+				setReviews((prev) => [...prev, ...res.results]);
+				setReviewPage(nextPage);
+				setHasMoreReviews(nextPage < (res.total_pages ?? nextPage));
+			} else {
+				setHasMoreReviews(false);
+			}
 		} catch (error) {
 			console.error("Error loading more reviews: ", error);
 		} finally {
 			setIsFetchingReviews(false);
 		}
-	};
+	}, [isFetchingReviews, hasMoreReviews, reviewPage, reviews]);
 
 	useEffect(() => {
 		if (movieId) {
