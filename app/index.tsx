@@ -3,6 +3,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useGenres } from "../src/hooks/useGenres";
 import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
+import { Film } from "lucide-react-native";
+import GenreCard from "../src/components/genre/GenreCard";
 
 export default function MainScreen() {
 	const router = useRouter();
@@ -29,18 +31,40 @@ export default function MainScreen() {
 		<SafeAreaView className="flex-1 bg-background">
 			<StatusBar style="light" />
 
-			<View className="px-4 pt-4">
-				<Text className="mb-2 text-3xl font-bold text-textPrimary">Discover</Text>
-				<Text className="mb-6 text-textSecondary">Select a genre to find your next movie</Text>
+			{/* Header */}
+			<View style={{ paddingTop: 32, paddingBottom: 16, paddingInline: 24 }}>
+				<View className="flex-row items-center gap-2">
+					<View className=" bg-primary rounded-xl" style={{ padding: 8, marginRight: 12 }}>
+						<Film size={36} color={"white"} />
+					</View>
 
+					<View className="">
+						<Text className="text-4xl font-black tracking-tighter text-white uppercase">
+							Suka <Text style={{ color: "#E11D48" }}>Movies</Text>
+						</Text>
+						<Text className="text-xl tracking-wide text-textSecondary">
+							Discover your next favorite movies
+						</Text>
+					</View>
+				</View>
+			</View>
+
+			<View className="h-[1px] w-full bg-slate-800" />
+
+			{/* Genres */}
+			<View className="flex-1 px-6 mt-4">
+				<View className="flex-row items-center justify-between mb-6">
+					<Text className="text-2xl font-bold tracking-wider text-textPrimary">Browse Genres</Text>
+				</View>
 				<FlatList
 					data={genres}
 					numColumns={2}
 					keyExtractor={(item) => item.id.toString()}
-					columnWrapperStyle={{ justifyContent: "space-between", gap: 10 }}
+					columnWrapperStyle={{ justifyContent: "space-between" }}
+					showsVerticalScrollIndicator={false}
 					renderItem={({ item }) => (
-						<TouchableOpacity
-							className="w-[48%] mb-4 p-6 border shadow-lg bg-surface rounded-2xl border-slate-700 active:opacity-70"
+						<GenreCard
+							item={item}
 							onPress={() => {
 								router.push({
 									pathname: "movies-by-genre/[id]",
@@ -50,10 +74,7 @@ export default function MainScreen() {
 									},
 								});
 							}}
-						>
-							<View className="w-10 h-1 mb-3 rounded-full bg-primary" />
-							<Text className="text-lg font-semibold text-textPrimary">{item.name}</Text>
-						</TouchableOpacity>
+						/>
 					)}
 				/>
 			</View>

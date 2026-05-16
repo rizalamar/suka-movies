@@ -3,8 +3,6 @@ import React from "react";
 import { useMoviesByGenre } from "../../src/hooks/useMoviesByGenre";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, Stack, useLocalSearchParams } from "expo-router";
-import { IMAGE_BASE_URL } from "../../src/constants/image";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MovieCard from "../../src/components/movie/MovieCard";
 
 const MoviesScreen = () => {
