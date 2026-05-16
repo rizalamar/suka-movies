@@ -9,7 +9,7 @@ import YoutubePlayer from "react-native-youtube-iframe";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { BlurView } from "expo-blur";
 import { SCREEN_HEIGHT, VIDEO_HEIGHT, VIDEO_WIDTH } from "../../src/constants/movie-detail";
-import { opacity } from "react-native-reanimated/lib/typescript/Colors";
+import ReviewItem from "../../src/components/review/ReviewItem";
 
 export default function MovieDetailScreen() {
 	const { id } = useLocalSearchParams();
@@ -179,24 +179,7 @@ export default function MovieDetailScreen() {
 				ListHeaderComponent={renderHeader}
 				onEndReached={loadMoreReviews}
 				onEndReachedThreshold={0.1}
-				renderItem={({ item }) => (
-					<View className="px-4 mb-6">
-						<View className="p-4 border bg-surface rounded-2xl border-slate-800">
-							<View className="flex-row items-center gap-2 mb-2">
-								<View className="items-center justify-center p-3 mr-3 rounded-full bg-primary">
-									<Text className="font-bold text-textPrimary">{item.author[0].toUpperCase()}</Text>
-								</View>
-
-								<View>
-									<Text className="font-bold text-textSecondary">{item.author}</Text>
-									<Text className="text-xs text-textPrimary">Verified Audience</Text>
-								</View>
-							</View>
-
-							<Text className="text-sm italic text-textSecondary">"{item.content}"</Text>
-						</View>
-					</View>
-				)}
+				renderItem={({ item }) => <ReviewItem item={item} />}
 				ListEmptyComponent={
 					!isLoading && <Text className="px-4 text-center text-textSecondary">No reviews yet</Text>
 				}
