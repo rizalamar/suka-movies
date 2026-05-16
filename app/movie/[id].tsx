@@ -8,8 +8,7 @@ import React from "react";
 import YoutubePlayer from "react-native-youtube-iframe";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { BlurView } from "expo-blur";
-
-const { height: SCREEN_HEIGHT } = Dimensions.get("window");
+import { SCREEN_HEIGHT, VIDEO_HEIGHT, VIDEO_WIDTH } from "../../src/constants/movie-detail";
 
 export default function MovieDetailScreen() {
 	const { id } = useLocalSearchParams();
@@ -30,13 +29,16 @@ export default function MovieDetailScreen() {
 		return (
 			<View className="pb-8">
 				{/* Blurred Backdrop */}
-				<View style={{ height: SCREEN_HEIGHT * 0.8 }}>
+				<View style={{ height: SCREEN_HEIGHT * 0.6 }}>
 					<RNImage
 						source={{ uri: `${IMAGE_BASE_URL}${movie.poster_path || movie.backdrop_path}` }}
 						contentFit="cover"
+						blurRadius={1}
 						style={StyleSheet.absoluteFill}
+						transition={500}
 					/>
-					<BlurView intensity={100} tint="systemUltraThinMaterialDark" style={StyleSheet.absoluteFill} />
+
+					<BlurView intensity={100} tint="dark" style={StyleSheet.absoluteFill} />
 
 					<LinearGradient
 						style={styles.gradient}
@@ -45,57 +47,52 @@ export default function MovieDetailScreen() {
 
 					{/* FLoating Poster */}
 					<View className="absolute bottom-0 left-0 right-0 px-6">
-						<View
-							style={{ elevation: 20 }}
-							className="flex-row items-center mb-6 overflow-hidden shadow-2xl rounded-xl"
-						>
+						<View className="mb-6">
 							<Image
 								source={{ uri: `${IMAGE_BASE_URL}${movie.poster_path}` }}
 								contentFit="cover"
-								style={{ width: 140, aspectRatio: 2 / 3 }}
+								style={{
+									height: SCREEN_HEIGHT * 0.42,
+									aspectRatio: 2 / 3,
+									borderRadius: 16,
+									borderWidth: 1.5,
+									borderColor: "rgba(255,255,255,0.15)",
+								}}
 							/>
+						</View>
 
-							<View className="p-6">
-								<Text className="mb-3 text-4xl font-black leading-tight text-textPrimary">
-									{movie.title}
-								</Text>
+						<Text className="mb-3 text-4xl font-black leading-tight text-textPrimary">{movie.title}</Text>
 
-								<View className="flex-row items-center self-start px-3 py-2 mb-3 border bg-slate-900/50 rounded-xl border-slate-700">
-									<Text className="text-lg font-bold text-accent">
-										★ {movie.vote_average.toFixed(1)}
+						<View className="flex-row items-center self-start px-3 py-2 mb-3 border bg-slate-900/50 rounded-xl border-slate-700">
+							<Text className="text-lg font-bold text-accent">★ {movie.vote_average.toFixed(1)}</Text>
+							<View className="w-1 h-1 mx-3 rounded-full bg-slate-500" />
+							<Text className="font-medium text-slate-300">{movie.runtime} MIN</Text>
+							<View className="w-1 h-1 mx-3 rounded-full bg-slate-500" />
+							<Text className="font-medium text-slate-300">{movie.release_date.split("-")[0]}</Text>
+							<View className="w-1 h-1 mx-3 rounded-full bg-slate-500" />
+							<Text className="font-medium text-slate-300">{movie.original_language}</Text>
+							<View className="w-1 h-1 mx-3 rounded-full bg-slate-500" />
+							<Text className="font-medium text-slate-300">{movie.origin_country}</Text>
+						</View>
+
+						{/* GENRES */}
+						<View className="flex-row flex-wrap gap-2">
+							{movie.genres.map((g) => (
+								<View
+									key={g.id}
+									className="bg-primary border border-primary/50 px-4 py-1.5 rounded-full"
+								>
+									<Text className="text-textPrimary text-[10px] font-bold tracking-widest uppercase">
+										{g.name}
 									</Text>
-									<View className="w-1 h-1 mx-3 rounded-full bg-slate-500" />
-									<Text className="font-medium text-slate-300">{movie.runtime} MIN</Text>
-									<View className="w-1 h-1 mx-3 rounded-full bg-slate-500" />
-									<Text className="font-medium text-slate-300">
-										{movie.release_date.split("-")[0]}
-									</Text>
-									<View className="w-1 h-1 mx-3 rounded-full bg-slate-500" />
-									<Text className="font-medium text-slate-300">{movie.original_language}</Text>
-									<View className="w-1 h-1 mx-3 rounded-full bg-slate-500" />
-									<Text className="font-medium text-slate-300">{movie.origin_country}</Text>
 								</View>
-
-								{/* GENRES */}
-								<View className="flex-row flex-wrap gap-2">
-									{movie.genres.map((g) => (
-										<View
-											key={g.id}
-											className="bg-primary border border-primary/50 px-4 py-1.5 rounded-full"
-										>
-											<Text className="text-textPrimary text-[10px] font-bold tracking-widest uppercase">
-												{g.name}
-											</Text>
-										</View>
-									))}
-								</View>
-							</View>
+							))}
 						</View>
 					</View>
 				</View>
 
 				{/* CONTENT SECTION */}
-				<View className="px-6 mt-4">
+				<View className="px-6 mt-3">
 					{/* SYNOPSIS */}
 					<View className="mt-8">
 						<Text className="text-textPrimary text-lg font-black tracking-[1px] uppercase mb-3">
@@ -108,15 +105,26 @@ export default function MovieDetailScreen() {
 				{/* VIDEO SECTION */}
 				{trailer && (
 					<View className="px-6 mt-10">
-						<Text className="text-slate-500 text-[10px] font-black tracking-[3px] uppercase mb-4">
-							Official Trailer
+						<View className="h-[1px] bg-slate-800 w-20 self-center mb-8" />
+						<Text
+							className="text-textPrimary text-lg font-black tracking-[1px] uppercase "
+							style={{ paddingBlock: 20 }}
+						>
+							Watch Trailer
 						</Text>
 						<View className="overflow-hidden border shadow-2xl rounded-3xl bg-slate-900 border-slate-800">
 							<YoutubePlayer
-								height={220}
+								height={VIDEO_HEIGHT}
+								width={VIDEO_WIDTH}
 								videoId={trailer.key}
 								webViewProps={{
-									androidLayerType: "software", // Penting untuk Bluestacks/Android Emulator
+									androidLayerType: "software",
+									style: { opacity: 0.99, backgroundColor: "transparent" },
+								}}
+								initialPlayerParams={{
+									preventFullScreen: false,
+									cc_load_policy: 0,
+									rel: 0,
 								}}
 							/>
 						</View>
@@ -157,7 +165,7 @@ export default function MovieDetailScreen() {
 				keyExtractor={(item) => item.id.toString()}
 				ListHeaderComponent={renderHeader}
 				onEndReached={loadMoreReviews}
-				onEndReachedThreshold={0.5}
+				onEndReachedThreshold={0.1}
 				renderItem={({ item }) => (
 					<View className="px-4 mb-6">
 						<View className="p-4 border bg-surface rounded-2xl border-slate-800">

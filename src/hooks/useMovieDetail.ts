@@ -23,7 +23,9 @@ export const useMovieDetail = (movieId: number) => {
 				movieService.getMovieReviews(movieId, 1),
 			]);
 
-			const ytTrailer = videoData.results.find((v) => v.type === "Trailer" && v.site === "Youtube");
+			const ytTrailer =
+				videoData.results.find((v) => v.type === "Trailer" && v.site === "YouTube") ||
+				videoData.results.find((v) => v.type === "Teaser" && v.site === "YouTube");
 
 			setMovie(movieDetailData);
 			setReviews(reviewData.results);
