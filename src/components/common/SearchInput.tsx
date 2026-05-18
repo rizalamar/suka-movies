@@ -27,7 +27,6 @@ const SearchInput = ({ value, onChangeText, onClear, placeholder }: Props) => {
 					<X size={20} color={"#94a3b8"} />
 				</TouchableOpacity>
 			)}
-			<Text>SearchInput</Text>
 		</View>
 	);
 };

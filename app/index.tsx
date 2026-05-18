@@ -1,4 +1,4 @@
-import { FlatList, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useGenres } from "../src/hooks/useGenres";
 import { StatusBar } from "expo-status-bar";
@@ -8,10 +8,25 @@ import GenreCard from "../src/components/genre/GenreCard";
 import MovieSkeleton from "../src/components/common/MovieSkeleton";
 import ErrorState from "../src/components/common/ErrorState";
 import EmptyState from "../src/components/common/EmptyState";
+import { useSearchMovies } from "../src/hooks/useSearchMovies";
+import SearchInput from "../src/components/common/SearchInput";
+import MovieCard from "../src/components/movie/MovieCard";
 
 export default function MainScreen() {
 	const router = useRouter();
 	const { genres, isLoading, error, refetch } = useGenres();
+	const {
+		query,
+		setQuery,
+		movies: searchResults,
+		isLoading: isLoadingSearch,
+		error: errorSearch,
+		loadMore: loadMoreSearch,
+		hasMore: hasMoreSearch,
+		isFetchingNextPage: isFetchingNextSearch,
+		refetch: refetchSearch,
+	} = useSearchMovies();
+	const isSearching = query.length > 0;
 
 	if (isLoading) {
 		return (
@@ -48,40 +63,95 @@ export default function MainScreen() {
 				</View>
 			</View>
 
+			{/* SearchInput */}
+			<View style={{ paddingTop: 32, paddingBottom: 16, paddingInline: 24 }}>
+				<SearchInput value={query} onChangeText={setQuery} onClear={() => setQuery("")} />
+			</View>
+
 			<View className="h-[1px] w-full bg-slate-800" />
 
 			{/* Genres */}
 			<View className="flex-1 px-6 mt-4">
-				<View className="flex-row items-center justify-between mb-6">
-					<Text className="text-2xl font-bold tracking-wider text-textPrimary">Browse Genres</Text>
-				</View>
-				<FlatList
-					data={genres}
-					numColumns={2}
-					keyExtractor={(item) => item.id.toString()}
-					columnWrapperStyle={{ justifyContent: "space-between" }}
-					showsVerticalScrollIndicator={false}
-					renderItem={({ item }) => (
-						<GenreCard
-							item={item}
-							onPress={() => {
-								router.push({
-									pathname: "movies-by-genre/[id]",
-									params: {
-										id: item.id,
-										name: item.name,
-									},
-								});
-							}}
+				{isSearching ? (
+					// Search mode
+					<>
+						<Text className="mb-6 text-2xl font-bold tracking-wider text-textPrimary">Search Results</Text>
+						{isLoadingSearch || (query.length > 0 && searchResults.length === 0) ? (
+							<MovieSkeleton count={genres.length} />
+						) : errorSearch ? (
+							<ErrorState message={errorSearch} onRetry={refetchSearch} />
+						) : (
+							<FlatList
+								data={searchResults}
+								numColumns={2}
+								keyExtractor={(item) => item.id.toString()}
+								columnWrapperStyle={{ justifyContent: "space-between", gap: 15 }}
+								onEndReached={loadMoreSearch}
+								onEndReachedThreshold={0.5}
+								showsVerticalScrollIndicator={false}
+								renderItem={({ item }) => (
+									<MovieCard
+										item={item}
+										onPress={() =>
+											router.push({
+												pathname: "/movie/[id]",
+												params: {
+													id: item.id,
+												},
+											})
+										}
+									/>
+								)}
+								ListEmptyComponent={
+									<EmptyState title={"No movies found"} message="Try different keywords" />
+								}
+								ListFooterComponent={
+									isFetchingNextSearch ? (
+										<ActivityIndicator color={"#E11d48"} className="my-4" />
+									) : (
+										<View className="h-10" />
+									)
+								}
+							/>
+						)}
+					</>
+				) : (
+					// Genres Mode
+					<>
+						<View className="flex-row items-center justify-between mb-6">
+							<Text className="text-2xl font-bold tracking-wider text-textPrimary">Browse Genres</Text>
+						</View>
+						<FlatList
+							data={genres}
+							numColumns={2}
+							keyExtractor={(item) => item.id.toString()}
+							columnWrapperStyle={{ justifyContent: "space-between" }}
+							showsVerticalScrollIndicator={false}
+							renderItem={({ item }) => (
+								<GenreCard
+									item={item}
+									onPress={() => {
+										router.push({
+											pathname: "movies-by-genre/[id]",
+											params: {
+												id: item.id,
+												name: item.name,
+											},
+										});
+									}}
+								/>
+							)}
+							ListEmptyComponent={
+								!isLoadingSearch && query.length > 0 && searchResults.length === 0 ? (
+									<EmptyState
+										title={"No Genres Available"}
+										message="Please pull to refresh or try again later."
+									/>
+								) : null
+							}
 						/>
-					)}
-					ListEmptyComponent={
-						<EmptyState
-							title={"No Genres Available"}
-							message="Please pull to refresh or try again later."
-						/>
-					}
-				/>
+					</>
+				)}
 			</View>
 		</SafeAreaView>
 	);
