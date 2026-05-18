@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import MovieCard from "../../src/components/movie/MovieCard";
 import ErrorState from "../../src/components/common/ErrorState";
+import EmptyState from "../../src/components/common/EmptyState";
 
 const MoviesScreen = () => {
 	const { id, name } = useLocalSearchParams<{ id: string; name: string }>();
@@ -50,6 +51,14 @@ const MoviesScreen = () => {
 								}}
 							/>
 						)}
+						ListEmptyComponent={
+							!isLoading ? (
+								<EmptyState
+									title={"No Movies Found"}
+									message="We couldn't find any movies for this genre right now."
+								/>
+							) : null
+						}
 						ListFooterComponent={
 							isFetchingNextPage ? (
 								<ActivityIndicator color={"#e11d48"} className="my-4" />

@@ -7,6 +7,7 @@ import { Film } from "lucide-react-native";
 import GenreCard from "../src/components/genre/GenreCard";
 import MovieSkeleton from "../src/components/common/MovieSkeleton";
 import ErrorState from "../src/components/common/ErrorState";
+import EmptyState from "../src/components/common/EmptyState";
 
 export default function MainScreen() {
 	const router = useRouter();
@@ -74,6 +75,12 @@ export default function MainScreen() {
 							}}
 						/>
 					)}
+					ListEmptyComponent={
+						<EmptyState
+							title={"No Genres Available"}
+							message="Please pull to refresh or try again later."
+						/>
+					}
 				/>
 			</View>
 		</SafeAreaView>
