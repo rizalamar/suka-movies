@@ -51,5 +51,7 @@ export const useMoviesByGenre = (genreId: number) => {
 		}
 	};
 
-	return { movies, isLoading, error, loadMore, hasMore, isFetchingNextPage };
+	const refetch = () => fetchMovies(1, true);
+
+	return { movies, isLoading, error, loadMore, hasMore, isFetchingNextPage, refetch };
 };

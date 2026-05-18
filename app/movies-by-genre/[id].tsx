@@ -4,10 +4,16 @@ import { useMoviesByGenre } from "../../src/hooks/useMoviesByGenre";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import MovieCard from "../../src/components/movie/MovieCard";
+import ErrorState from "../../src/components/common/ErrorState";
 
 const MoviesScreen = () => {
 	const { id, name } = useLocalSearchParams<{ id: string; name: string }>();
-	const { movies, isLoading, error, isFetchingNextPage, loadMore, hasMore } = useMoviesByGenre(Number(id));
+	const { movies, isLoading, error, isFetchingNextPage, loadMore, refetch } = useMoviesByGenre(Number(id));
+
+	if (error && movies.length === 0) {
+		return <ErrorState message={error} onRetry={refetch} />;
+	}
+
 	return (
 		<SafeAreaView className="flex-1 bg-background" edges={["bottom"]}>
 			<Stack.Screen
