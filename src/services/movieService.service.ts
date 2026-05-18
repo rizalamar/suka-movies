@@ -33,4 +33,13 @@ export const movieService = {
 		const res = await api.get<VideoResponse>(`/movie/${movieId}/videos`);
 		return res.data;
 	},
+	searchMovies: async (query: string, page: number = 1): Promise<ApiResponse<Movie[]>> => {
+		const res = await api.get<ApiResponse<Movie[]>>("/search/movie", {
+			params: {
+				query: query,
+				page: page,
+			},
+		});
+		return res.data;
+	},
 };
