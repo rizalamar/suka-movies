@@ -1,10 +1,12 @@
-import { ActivityIndicator, Button, FlatList, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useGenres } from "../src/hooks/useGenres";
 import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
 import { Film } from "lucide-react-native";
 import GenreCard from "../src/components/genre/GenreCard";
+import MovieSkeleton from "../src/components/common/MovieSkeleton";
+import ErrorState from "../src/components/common/ErrorState";
 
 export default function MainScreen() {
 	const router = useRouter();
@@ -12,19 +14,15 @@ export default function MainScreen() {
 
 	if (isLoading) {
 		return (
-			<View className="items-center justify-center flex-1 bg-background">
-				<ActivityIndicator size="large" color="#e11d48" />
-			</View>
+			<SafeAreaView className="flex-1 px-6 bg-background">
+				<View className="w-full h-20 mt-4 mb-8 bg-slate-900/50 rounded-2xl" />
+				<MovieSkeleton count={6} />
+			</SafeAreaView>
 		);
 	}
 
 	if (error) {
-		return (
-			<View className="flex-1 bg-background">
-				<Text className="text-red-500">{error}</Text>
-				<Button title="Retry" onPress={refetch} />
-			</View>
-		);
+		return <ErrorState message={error} onRetry={refetch} />;
 	}
 
 	return (

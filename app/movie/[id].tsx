@@ -7,6 +7,7 @@ import ReviewItem from "../../src/components/review/ReviewItem";
 import MovieHero from "../../src/components/movie/MovieHero";
 import MovieAbout from "../../src/components/movie/MovieAbout";
 import MovieTrailer from "../../src/components/movie/MovieTrailer";
+import EmptyState from "../../src/components/common/EmptyState";
 
 export default function MovieDetailScreen() {
 	const { id } = useLocalSearchParams();
@@ -69,9 +70,7 @@ export default function MovieDetailScreen() {
 				maxToRenderPerBatch={5}
 				windowSize={5}
 				renderItem={({ item }) => <ReviewItem item={item} />}
-				ListEmptyComponent={
-					!isLoading && <Text className="px-4 text-center text-textSecondary">No reviews yet</Text>
-				}
+				ListEmptyComponent={<EmptyState title="No Reviews Yet" />}
 				ListFooterComponent={
 					isFetchingReviews && hasMoreReviews ? (
 						<ActivityIndicator color={"#e11d48"} className="my-8" size={"small"} />

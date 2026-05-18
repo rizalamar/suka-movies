@@ -36,7 +36,7 @@ const GenreCard = ({ item, onPress }: Props) => {
 						<Text className="text-2xl font-semibold text-textPrimary">{item.name}</Text>
 					</View>
 				</View>
-				<View className="w-8 h-1 mt-4 rounded-full bg-primary" style={{ opacity: 0.5 }} />
+				<View className="w-full h-1 mt-4 rounded-full bg-primary" style={{ opacity: 0.5 }} />
 			</LinearGradient>
 		</TouchableOpacity>
 	);
