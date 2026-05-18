@@ -17,7 +17,7 @@ export default function MainScreen() {
 		return (
 			<SafeAreaView className="flex-1 px-6 bg-background">
 				<View className="w-full h-20 mt-4 mb-8 bg-slate-900/50 rounded-2xl" />
-				<MovieSkeleton count={6} />
+				<MovieSkeleton count={genres.length} />
 			</SafeAreaView>
 		);
 	}

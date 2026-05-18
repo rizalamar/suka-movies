@@ -16,11 +16,11 @@ const SkeletonCard = () => {
 
 	return (
 		<View
-			style={{ width: CARD_WIDTH }}
-			className="mb-4 overflow-hidden rounded-2xl bg-[#1e293b] border border-slate-800"
+			style={{ width: 320, maxHeight: 950 }}
+			className="mb-4 overflow-hidden rounded-2xl bg-[#1e293b] border border-slate-800 p-6"
 		>
-			<Animated.View style={[{ height: "100%", aspectRatio: 2 / 3, backgroundColor: "#334155", opacity }]} />
-			<View className="p-3">
+			<Animated.View style={[{ height: "25%", aspectRatio: 3 / 4, backgroundColor: "#334155", opacity }]} />
+			<View className="mt-3">
 				<Animated.View
 					style={{ height: 14, width: "80%", backgroundColor: "#334155", borderRadius: 4, opacity }}
 				/>
@@ -39,9 +39,9 @@ const SkeletonCard = () => {
 	);
 };
 
-const MovieSkeleton = ({ count = 6 }: { count?: number }) => {
+const MovieSkeleton = ({ count = 10 }: { count?: number }) => {
 	return (
-		<View className="flex-row flex-wrap justify-between">
+		<View className="flex-row flex-wrap justify-between gap-2">
 			{Array.from({ length: count }).map((_, i) => (
 				<SkeletonCard key={i} />
 			))}
