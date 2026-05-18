@@ -10,6 +10,7 @@ export const useMovieDetail = (movieId: number) => {
 	const [trailer, setTrailer] = useState<Video | null>(null);
 
 	const [isLoading, setisLoading] = useState<boolean>(false);
+	const [error, setError] = useState<string | null>(null);
 	const [reviewPage, setReviewPage] = useState<number>(1);
 	const [hasMoreReviews, setHasMoreReviews] = useState<boolean>(true);
 	const [isFetchingReviews, setIsFetchingReviews] = useState<boolean>(false);
@@ -18,6 +19,7 @@ export const useMovieDetail = (movieId: number) => {
 	const fetchDetailMovieData = async () => {
 		try {
 			setisLoading(true);
+			setError(null);
 			isInitialLoad.current = true;
 			const [movieDetailData, videoData, reviewData] = await Promise.all([
 				movieService.getMovieDetail(movieId),
@@ -34,13 +36,8 @@ export const useMovieDetail = (movieId: number) => {
 			setTrailer(ytTrailer || null);
 
 			setHasMoreReviews((reviewData.page ?? 1) < (reviewData.total_pages ?? 1));
-
-			console.log({
-				page: reviewData.page,
-				total_pages: reviewData.total_pages,
-				results_count: reviewData.results.length,
-			});
 		} catch (error) {
+			setError("Failed to load movie detail. Please check your connection");
 			console.error("Error fetching movie details: ", error);
 		} finally {
 			setisLoading(false);
@@ -80,6 +77,8 @@ export const useMovieDetail = (movieId: number) => {
 		movie,
 		reviews,
 		trailer,
+		error,
+		refetch: fetchDetailMovieData,
 		isLoading,
 		loadMoreReviews,
 		hasMoreReviews,

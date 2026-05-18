@@ -8,12 +8,12 @@ import MovieHero from "../../src/components/movie/MovieHero";
 import MovieAbout from "../../src/components/movie/MovieAbout";
 import MovieTrailer from "../../src/components/movie/MovieTrailer";
 import EmptyState from "../../src/components/common/EmptyState";
+import ErrorState from "../../src/components/common/ErrorState";
 
 export default function MovieDetailScreen() {
 	const { id } = useLocalSearchParams();
-	const { movie, reviews, trailer, isLoading, isFetchingReviews, loadMoreReviews, hasMoreReviews } = useMovieDetail(
-		Number(id)
-	);
+	const { movie, reviews, trailer, error, refetch, isLoading, isFetchingReviews, loadMoreReviews, hasMoreReviews } =
+		useMovieDetail(Number(id));
 
 	const ListHeader = useMemo(
 		() => (
@@ -31,6 +31,10 @@ export default function MovieDetailScreen() {
 		),
 		[movie, trailer]
 	);
+
+	if (error) {
+		return <ErrorState message={error} onRetry={refetch} />;
+	}
 
 	if (isLoading || !movie) {
 		return (
