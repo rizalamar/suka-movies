@@ -21,21 +21,35 @@ export const useMovieDetail = (movieId: number) => {
 			setisLoading(true);
 			setError(null);
 			isInitialLoad.current = true;
-			const [movieDetailData, videoData, reviewData] = await Promise.all([
+			const results = await Promise.allSettled([
 				movieService.getMovieDetail(movieId),
 				movieService.getMovieVideos(movieId),
 				movieService.getMovieReviews(movieId, 1),
 			]);
+			console.log("🚀 ~ fetchDetailMovieData ~ results:", results);
 
-			const ytTrailer =
-				videoData.results.find((v) => v.type === "Trailer" && v.site === "YouTube") ||
-				videoData.results.find((v) => v.type === "Teaser" && v.site === "YouTube");
+			const movieRes = results[0];
+			if (movieRes.status === "fulfilled") {
+				setMovie(movieRes.value);
+			} else {
+				throw new Error("Failed to load movie details");
+			}
 
-			setMovie(movieDetailData);
-			setReviews(reviewData.results);
-			setTrailer(ytTrailer || null);
+			const videoRes = results[1];
+			if (videoRes.status === "fulfilled") {
+				const videoData = videoRes.value;
+				const ytTrailer =
+					videoData.results.find((v) => v.type === "Trailer" && v.site === "YouTube") ||
+					videoData.results.find((v) => v.type === "Teaser" && v.site === "YouTube");
+				setTrailer(ytTrailer || null);
+			}
 
-			setHasMoreReviews((reviewData.page ?? 1) < (reviewData.total_pages ?? 1));
+			const reviewsRes = results[2];
+			if (reviewsRes.status === "fulfilled") {
+				const reviewData = reviewsRes.value;
+				setReviews(reviewData.results);
+				setHasMoreReviews((reviewData.page ?? 1) < (reviewData.total_pages ?? 1));
+			}
 		} catch (error) {
 			setError("Failed to load movie detail. Please check your connection");
 			console.error("Error fetching movie details: ", error);
